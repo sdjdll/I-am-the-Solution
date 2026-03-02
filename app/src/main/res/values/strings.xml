@@ -13,4 +13,6 @@
     <string name="IDK">I don\'t know what to write in this place</string>
     <string name="Hw">Yes. I printed a \"Hello World\" in log</string>
     <string name="authorize">Please authorize first</string>
+    <string name="goto_foreground">If your player cannot play in background, look here.</string>
+    <string name="goto_permission">If your player cannot list your music, look here.</string>
 </resources>

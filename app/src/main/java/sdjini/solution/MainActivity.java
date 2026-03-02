@@ -24,6 +24,7 @@ import sdjini.solution.file_core.MusicFile;
 import sdjini.solution.intent.MusicControl;
 import sdjini.solution.intent.MusicNext;
 import sdjini.solution.intent.MusicPrevious;
+import sdjini.solution.intent.MusicSwitch;
 import sdjini.solution.intent.PlayerModeSwitch;
 import sdjini.solution.intent.Reflash;
 import sdjini.solution.intent.UpdateProgress;
@@ -58,8 +59,8 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.Fab_Setting).setOnClickListener(view -> startActivity(new Intent(this, SettingActivity.class)));
         findViewById(R.id.Btn_Sync).setOnClickListener(v -> updateList());
 
-        findViewById(R.id.Btn_Next).setOnClickListener(v -> lb.sendBroadcast(new MusicNext(1)));
-        findViewById(R.id.Btn_Previous).setOnClickListener(v -> lb.sendBroadcast(new MusicPrevious(1)));
+        findViewById(R.id.Btn_Next).setOnClickListener(v -> lb.sendBroadcast(new MusicNext()));
+        findViewById(R.id.Btn_Previous).setOnClickListener(v -> lb.sendBroadcast(new MusicPrevious()));
         findViewById(R.id.Btn_Contrl).setOnClickListener(v -> lb.sendBroadcast(new MusicControl()));
         startForegroundService(new Intent(this, MusicPlay.class));
 
@@ -111,19 +112,7 @@ public class MainActivity extends AppCompatActivity {
             TextView textView = new TextView(this);
             textView.setText(mf.Title);
             int temp = num;
-            textView.setOnClickListener(v -> {
-                final int nowChose = temp;
-                int playN = MusicPlay.playN;
-                LocalBroadcastManager lb = LocalBroadcastManager.getInstance(this);
-                if (nowChose > playN)
-                    lb.sendBroadcast(new MusicNext(nowChose - playN));
-                else if (nowChose < playN)
-                    lb.sendBroadcast(new MusicPrevious(playN - nowChose));
-                else {
-                    lb.sendBroadcast(new MusicNext(1));
-                    lb.sendBroadcast(new MusicPrevious(1));
-                }
-            });
+            textView.setOnClickListener(v -> LocalBroadcastManager.getInstance(this).sendBroadcast(new MusicSwitch(temp)));
             logger.printAndWrite(Level.STEP, new Tags.MainTag.Default(), "File: " + mf.getPath(), "Title: " + mf.Title);
             Linear.addView(textView);
             num++;

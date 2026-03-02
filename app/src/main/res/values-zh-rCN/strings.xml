@@ -13,4 +13,6 @@
     <string name="IDK">我不知道这个地方写什么东西</string>
     <string name="Hw">所以我往日志里写了串Hello World</string>
     <string name="authorize">请先授权</string>
+    <string name="goto_foreground">如果后台播放异常，可以授权通知权限以使用前台保活</string>
+    <string name="goto_permission">如果播放器无法获取你的音乐文件，请授权 音频管理/媒体管理 权限</string>
 </resources>

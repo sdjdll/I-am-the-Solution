@@ -35,6 +35,7 @@ import sdjini.solution.intent.MusicControl;
 import sdjini.solution.intent.MusicNext;
 import sdjini.solution.intent.MusicPlayInit;
 import sdjini.solution.intent.MusicPrevious;
+import sdjini.solution.intent.MusicSwitch;
 import sdjini.solution.intent.PlayerModeSwitch;
 import sdjini.solution.intent.UpdateProgress;
 import sdjini.solution.log.Level;
@@ -63,8 +64,9 @@ public class MusicPlay extends Service {
             try{
                 switch (intent.getAction()) {
                     case MusicControl.Action -> Control();
-                    case MusicPrevious.Action -> Previous(intent.getIntExtra(MusicPrevious.Name.Number, 1));
-                    case MusicNext.Action -> Next(intent.getIntExtra(MusicNext.Name.Number, 1));
+                    case MusicPrevious.Action -> Previous();
+                    case MusicNext.Action -> Next();
+                    case MusicSwitch.Action -> Switch(intent.getIntExtra(MusicSwitch.Name.ChoseNumber, -1));
                     case PlayerModeSwitch.Action -> switchMode(intent.getStringExtra(PlayerModeSwitch.Name.Mode), intent.getBooleanExtra(PlayerModeSwitch.Name.State, false));
                     case null, default -> logger.printAndWrite(Level.ERROR, new Tags.MusicTag.IntentTrans(), "Unknow Intent", new IllegalArgumentException());
                 }
@@ -116,11 +118,17 @@ public class MusicPlay extends Service {
                 case null, default -> logger.printAndWrite(Level.ERROR, new Tags.MusicTag.MusicManage(), "Unknow State", new IllegalStateException());
             }
         }
-        private void Next(int num){
-            for (int i = 0; i < num; i++) next();
+        private void Switch(int num){
+            stop();
+            playN = num;
+            setPlayer(playList.get(playN));
+            play();
         }
-        private void Previous(int num){
-            for (int i = 0; i < num; i++) previous();
+        private void Next(){
+            next();
+        }
+        private void Previous(){
+            previous();
         }
     };
 
@@ -135,6 +143,7 @@ public class MusicPlay extends Service {
         iF.addAction(MusicNext.Action);
         iF.addAction(MusicControl.Action);
         iF.addAction(MusicPrevious.Action);
+        iF.addAction(MusicSwitch.Action);
         iF.addAction(PlayerModeSwitch.Action);
         LocalBroadcastManager.getInstance(this).registerReceiver(ControlReceiver, iF);
         logger.printAndWrite(Level.STEP,new Tags.MusicTag.MusicManage(),"Register Receiver: ControlReceiver");
