@@ -1,0 +1,16 @@
+<resources>
+    <string name="app_name">I\'m the Solution</string>
+    <string name="Tv_NowPlaying">Now Playing:</string>
+    <string name="Repeat">Repeat</string>
+    <string name="Loop">Loop</string>
+    <string name="Random">Random</string>
+    <string name="Setting">Setting</string>
+    <string name="ChooseDir">Choose Dir</string>
+    <string name="SAF">SAF</string>
+    <string name="IsPlaying">Playing - </string>
+    <string name="IsPause">Pause - </string>
+    <string name="List">Music List</string>
+    <string name="IDK">I don\'t know what to write in this place</string>
+    <string name="Hw">Yes. I printed a \"Hello World\" in log</string>
+    <string name="authorize">Please authorize first</string>
+</resources>
