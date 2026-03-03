@@ -18,4 +18,6 @@
     <string name="previous">上一首</string>
     <string name="next">下一首</string>
     <string name="control">控制</string>
+    <string name="notification">通知权限</string>
+    <string name="media">媒体管理</string>
 </resources>

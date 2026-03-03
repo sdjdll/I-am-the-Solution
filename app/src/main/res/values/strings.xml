@@ -18,4 +18,6 @@
     <string name="previous">previous</string>
     <string name="next">next</string>
     <string name="control">control</string>
+    <string name="notification">Notification permission</string>
+    <string name="media">Media manage permission</string>
 </resources>

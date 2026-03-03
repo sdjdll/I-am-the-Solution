@@ -74,6 +74,8 @@ public class SettingActivity extends AppCompatActivity {
                 if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED)
                     ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.POST_NOTIFICATIONS}, 0);
         });
+        findViewById(R.id.Tv_media).setOnClickListener(v -> Toast.makeText(this, getString(R.string.goto_permission), Toast.LENGTH_SHORT).show());
+        findViewById(R.id.Tv_notification).setOnClickListener(v -> Toast.makeText(this, getString(R.string.goto_foreground), Toast.LENGTH_SHORT).show());
     }
 
 
