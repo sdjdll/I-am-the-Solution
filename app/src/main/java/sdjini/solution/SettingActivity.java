@@ -40,11 +40,11 @@ public class SettingActivity extends AppCompatActivity {
                 }
             }
             finish();
-                LocalBroadcastManager.getInstance(this).sendBroadcast(new Reflash());
+            LocalBroadcastManager.getInstance(this).sendBroadcast(new Reflash());
         }
     );
 
-    private class Hw implements Tag{
+    private static class Hw implements Tag{
         @NonNull
         @Override
         public String toString() {

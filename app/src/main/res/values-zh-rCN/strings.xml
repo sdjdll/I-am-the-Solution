@@ -15,4 +15,7 @@
     <string name="authorize">请先授权</string>
     <string name="goto_foreground">如果后台播放异常，可以授权通知权限以使用前台保活</string>
     <string name="goto_permission">如果播放器无法获取你的音乐文件，请授权 音频管理/媒体管理 权限</string>
+    <string name="previous">上一首</string>
+    <string name="next">下一首</string>
+    <string name="control">控制</string>
 </resources>

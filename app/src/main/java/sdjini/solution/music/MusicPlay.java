@@ -2,9 +2,9 @@ package sdjini.solution.music;
 
 import static android.app.NotificationManager.IMPORTANCE_LOW;
 
-import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.Service;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -16,13 +16,11 @@ import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
-import android.widget.Switch;
 
 import androidx.core.app.NotificationCompat;
 import androidx.core.content.ContextCompat;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
@@ -33,7 +31,6 @@ import sdjini.solution.R;
 import sdjini.solution.file_core.MusicFile;
 import sdjini.solution.intent.MusicControl;
 import sdjini.solution.intent.MusicNext;
-import sdjini.solution.intent.MusicPlayInit;
 import sdjini.solution.intent.MusicPrevious;
 import sdjini.solution.intent.MusicSwitch;
 import sdjini.solution.intent.PlayerModeSwitch;
@@ -55,7 +52,6 @@ public class MusicPlay extends Service {
     private MediaPlayer mediaPlayer;
     private MusicFile nowPlaying;
     private Logger logger;
-    private NotificationCompat.Builder foregroundNotification;
     private Handler mainHandler;
     private final BroadcastReceiver ControlReceiver = new BroadcastReceiver() {
         @Override
@@ -132,6 +128,8 @@ public class MusicPlay extends Service {
         }
     };
 
+    private NotificationCompat.Builder foregroundNotification;
+
     @Override
     public void onCreate() {
         super.onCreate();
@@ -143,11 +141,17 @@ public class MusicPlay extends Service {
         iF.addAction(MusicNext.Action);
         iF.addAction(MusicControl.Action);
         iF.addAction(MusicPrevious.Action);
+        ContextCompat.registerReceiver(this, ControlReceiver, iF, ContextCompat.RECEIVER_EXPORTED);
+
         iF.addAction(MusicSwitch.Action);
         iF.addAction(PlayerModeSwitch.Action);
         LocalBroadcastManager.getInstance(this).registerReceiver(ControlReceiver, iF);
         logger.printAndWrite(Level.STEP,new Tags.MusicTag.MusicManage(),"Register Receiver: ControlReceiver");
         foreground();
+        NotificationCompat.Action actionPrevious = new NotificationCompat.Action.Builder(null, getString(R.string.previous), PendingIntent.getBroadcast(this, 0, new MusicPrevious(), PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE)).build();
+        NotificationCompat.Action actionControl = new NotificationCompat.Action.Builder(null, getString(R.string.control), PendingIntent.getBroadcast(this, 1, new MusicControl(), PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE)).build();
+        NotificationCompat.Action actionNext = new NotificationCompat.Action.Builder(null, getString(R.string.next), PendingIntent.getBroadcast(this, 2, new MusicNext(), PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE)).build();
+        foregroundNotification.addAction(actionPrevious).addAction(actionControl).addAction(actionNext);
         mediaPlayer.setOnCompletionListener(mp -> {
             try {
                 nowPlaying.now = 0;
@@ -158,7 +162,6 @@ public class MusicPlay extends Service {
         mainHandler = new Handler(Looper.getMainLooper());
         logger.printAndWrite(Level.INFO, new Tags.MusicTag.MusicManage(), "MusicPlay Created");
     }
-
     public static void updateMusicList(List<MusicFile> list){
         playList = list;
     }
@@ -175,10 +178,10 @@ public class MusicPlay extends Service {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) startForeground(1, foregroundNotification.build(), android.content.pm.ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PLAYBACK);
         logger.printAndWrite(Level.INFO,new Tags.MusicTag.MusicManage(),"Start Foreground");
     }
+
     private void sendNotification(String Title, String Content){
+        foregroundNotification.setContentTitle(Title).setContentText(Content);
         NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-        NotificationCompat.Builder nc = foregroundNotification;
-        nc.setContentTitle(Title).setContentText(Content);
         manager.notify(1,foregroundNotification.build());
         logger.printAndWrite(Level.STEP,new Tags.MusicTag.MusicManage(),"Update Notification");
     }

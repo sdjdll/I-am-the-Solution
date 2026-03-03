@@ -15,4 +15,7 @@
     <string name="authorize">Please authorize first</string>
     <string name="goto_foreground">If your player cannot play in background, look here.</string>
     <string name="goto_permission">If your player cannot list your music, look here.</string>
+    <string name="previous">previous</string>
+    <string name="next">next</string>
+    <string name="control">control</string>
 </resources>
