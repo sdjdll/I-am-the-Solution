@@ -1,15 +1,21 @@
 package sdjini.solution;
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.DocumentsContract;
+import android.provider.Settings;
 import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
 import sdjini.solution.file_core.SpManager;
 import sdjini.solution.log.Level;
@@ -52,6 +58,17 @@ public class SettingActivity extends AppCompatActivity {
             Toast.makeText(this, getText(R.string.Hw), Toast.LENGTH_SHORT).show();
             Logger logger = new Logger(this);
             logger.printAndWrite(Level.INFO, new Hw(), "Hello World", new Exception("Hello World"), "Hello World");
+        });
+
+        findViewById(R.id.Btn_OpenSetting).setOnClickListener(v->{
+            Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+            intent.setData(Uri.fromParts("package", getPackageName(), null));
+            startActivity(intent);
+        });
+        findViewById(R.id.Btn_OpenNotification).setOnClickListener(v -> {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
+                if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED)
+                    ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.POST_NOTIFICATIONS}, 0);
         });
     }
 
