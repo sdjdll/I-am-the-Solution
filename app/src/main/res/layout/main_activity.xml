@@ -111,11 +111,13 @@
 
                 <ScrollView
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent">
+                    android:layout_height="match_parent"
+                    android:layout_gravity="right">
 
                     <LinearLayout
-                        android:layout_width="match_parent"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_gravity="right"
                         android:gravity="right"
                         android:orientation="vertical">
 
@@ -125,21 +127,40 @@
                             android:layout_height="wrap_content"
                             android:text="@string/Loop" />
 
+                        <View
+                            android:layout_width="match_parent"
+                            android:layout_height="1dp"
+                            android:layout_margin="4dp"
+                            android:background="?android:attr/listDivider" />
+
                         <Switch
                             android:id="@+id/Sw_Random"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="@string/Random" />
 
+                        <View
+                            android:layout_width="match_parent"
+                            android:layout_height="1dp"
+                            android:layout_margin="4dp"
+                            android:background="?android:attr/listDivider" />
+
                         <Switch
                             android:id="@+id/Sw_Repeat"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="@string/Repeat" />
+
                     </LinearLayout>
                 </ScrollView>
 
             </LinearLayout>
+
+            <View
+                android:id="@+id/divider4"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="?android:attr/listDivider" />
 
         </LinearLayout>
 
