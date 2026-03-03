@@ -16,8 +16,10 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import sdjini.solution.file_core.SpManager;
+import sdjini.solution.intent.Reflash;
 import sdjini.solution.log.Level;
 import sdjini.solution.log.Logger;
 import sdjini.solution.log.Tag;
@@ -38,6 +40,7 @@ public class SettingActivity extends AppCompatActivity {
                 }
             }
             finish();
+                LocalBroadcastManager.getInstance(this).sendBroadcast(new Reflash());
         }
     );
 
