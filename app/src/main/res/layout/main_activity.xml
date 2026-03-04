@@ -89,12 +89,11 @@
                     android:text="00:00/00:00"
                     android:typeface="monospace" />
 
-                <ProgressBar
-                    android:id="@+id/Pb_Time"
-                    style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+                <SeekBar
+                    android:id="@+id/Sb_Time"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="2" />
+                    android:layout_height="wrap_content" />
+
             </LinearLayout>
 
             <LinearLayout
@@ -220,6 +219,7 @@
                     android:layout_height="wrap_content"
                     android:orientation="vertical" />
             </ScrollView>
+
         </LinearLayout>
     </LinearLayout>
 

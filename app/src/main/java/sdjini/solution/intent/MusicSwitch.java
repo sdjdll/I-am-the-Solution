@@ -9,6 +9,7 @@ public class MusicSwitch extends Intent {
     }
 
     public MusicSwitch(int num) {
+        super();
         setAction(Action);
         putExtra(Name.ChoseNumber, num);
     }

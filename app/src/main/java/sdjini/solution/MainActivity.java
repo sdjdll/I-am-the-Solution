@@ -7,6 +7,7 @@ import android.content.IntentFilter;
 import android.os.Bundle;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.SeekBar;
 import android.widget.Switch;
 import android.widget.TextView;
 
@@ -24,6 +25,7 @@ import sdjini.solution.file_core.MusicFile;
 import sdjini.solution.intent.MusicControl;
 import sdjini.solution.intent.MusicNext;
 import sdjini.solution.intent.MusicPrevious;
+import sdjini.solution.intent.MusicSeek;
 import sdjini.solution.intent.MusicSwitch;
 import sdjini.solution.intent.PlayerModeSwitch;
 import sdjini.solution.intent.Reflash;
@@ -37,6 +39,7 @@ import sdjini.solution.music.MusicTool;
 
 public class MainActivity extends AppCompatActivity {
     private Logger logger;
+    private int playerLength;
     private static final String[] Types = {
             ".mp3",                                                                 // MP3
             ".acc", ".mp4", ".m4a", ".3gp",                                         // AAC LC/LTP
@@ -56,12 +59,42 @@ public class MainActivity extends AppCompatActivity {
         updateList();
 
         LocalBroadcastManager lb = LocalBroadcastManager.getInstance(this);
+
         findViewById(R.id.Fab_Setting).setOnClickListener(view -> startActivity(new Intent(this, SettingActivity.class)));
         findViewById(R.id.Btn_Sync).setOnClickListener(v -> updateList());
 
         findViewById(R.id.Btn_Next).setOnClickListener(v -> lb.sendBroadcast(new MusicNext()));
         findViewById(R.id.Btn_Previous).setOnClickListener(v -> lb.sendBroadcast(new MusicPrevious()));
         findViewById(R.id.Btn_Contrl).setOnClickListener(v -> lb.sendBroadcast(new MusicControl()));
+
+        SeekBar Sb = findViewById(R.id.Sb_Time);
+        Sb.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                if (!fromUser) return;
+                int pN = (int) ((seekBar.getProgress() / 100f) * playerLength);
+                StringBuilder sb = new StringBuilder();
+                sb.append(MusicTool.getFormatTime(pN, pN <= 3600000 ? "mm:ss" : "H:mm:ss"))
+                        .append("/")
+                        .append(MusicTool.getFormatTime(playerLength, playerLength <= 3600000 ? "mm:ss" : "H:mm:ss"))
+                        .append("");
+                TextView tv = findViewById(R.id.Tv_Time);
+                tv.setText(sb);
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+                lb.unregisterReceiver(progressReceiver);
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+                IntentFilter iF = new IntentFilter();
+                iF.addAction(UpdateProgress.Action);
+                lb.registerReceiver(progressReceiver, iF);
+                lb.sendBroadcast(new MusicSeek((int) ((seekBar.getProgress() / 100f) * playerLength)));
+            }
+        });
         startForegroundService(new Intent(this, MusicPlay.class));
 
         Switch Sw_Loop = findViewById(R.id.Sw_Loop);
@@ -132,19 +165,19 @@ public class MainActivity extends AppCompatActivity {
         public void onReceive(Context context, @NonNull Intent intent) {
             if (Objects.equals(intent.getAction(), UpdateProgress.Action)) {
                 logger.printAndWrite(Level.STEP,new Tags.MainTag.UpdateProgress(),"Start Update");
-                int now = intent.getIntExtra(UpdateProgress.Name.NOW, 0);
-                int length = intent.getIntExtra(UpdateProgress.Name.LENGTH, 0);
+                int playerNow = intent.getIntExtra(UpdateProgress.Name.NOW, 0);
+                playerLength = intent.getIntExtra(UpdateProgress.Name.LENGTH, 0);
                 StringBuilder sb = new StringBuilder();
-                sb.append(MusicTool.getFormatTime(now, now <= 3600000 ? "mm:ss" : "H:mm:ss"))
+                sb.append(MusicTool.getFormatTime(playerNow, playerNow <= 3600000 ? "mm:ss" : "H:mm:ss"))
                         .append("/")
-                        .append(MusicTool.getFormatTime(length, length <= 3600000 ? "mm:ss" : "H:mm:ss"))
+                        .append(MusicTool.getFormatTime(playerLength, playerLength <= 3600000 ? "mm:ss" : "H:mm:ss"))
                         .append("");
                 TextView tv = findViewById(R.id.Tv_Time);
                 tv.setText(sb);
                 tv = findViewById(R.id.Tv_NowPlayingName);
                 tv.setText(intent.getStringExtra(UpdateProgress.Name.MUSIC_NAME));
-                ProgressBar Pb = findViewById(R.id.Pb_Time);
-                Pb.setProgress(1 + (int) (((float) now / (float) length) * 100));
+                SeekBar Sb = findViewById(R.id.Sb_Time);
+                Sb.setProgress(Math.round((playerNow / (float) playerLength) * 100));
                 logger.printAndWrite(Level.STEP,new Tags.MainTag.Default(),"onUpdate");
             }
         }

@@ -32,6 +32,7 @@ import sdjini.solution.file_core.MusicFile;
 import sdjini.solution.intent.MusicControl;
 import sdjini.solution.intent.MusicNext;
 import sdjini.solution.intent.MusicPrevious;
+import sdjini.solution.intent.MusicSeek;
 import sdjini.solution.intent.MusicSwitch;
 import sdjini.solution.intent.PlayerModeSwitch;
 import sdjini.solution.intent.UpdateProgress;
@@ -64,6 +65,17 @@ public class MusicPlay extends Service {
                     case MusicNext.Action -> Next();
                     case MusicSwitch.Action -> Switch(intent.getIntExtra(MusicSwitch.Name.ChoseNumber, -1));
                     case PlayerModeSwitch.Action -> switchMode(intent.getStringExtra(PlayerModeSwitch.Name.Mode), intent.getBooleanExtra(PlayerModeSwitch.Name.State, false));
+                    case MusicSeek.Action -> {
+                        mainHandler.removeCallbacks(progressRunnable);
+                        try{
+                            logger.printAndWrite(Level.STEP, new Tags.MusicTag.MusicManage(), "seek to" + intent.getIntExtra(MusicSeek.Name.Progress, 0));
+                            mediaPlayer.seekTo(intent.getIntExtra(MusicSeek.Name.Progress, 0));
+                            mediaPlayer.start();
+                        } catch (IllegalStateException e) {
+                            logger.printAndWrite(Level.ERROR, new Tags.MusicTag.MusicManage(),"Player not Prepared",e,"来碗炒饭！");
+                        }
+                        mainHandler.post(progressRunnable);
+                    }
                     case null, default -> logger.printAndWrite(Level.ERROR, new Tags.MusicTag.IntentTrans(), "Unknow Intent", new IllegalArgumentException());
                 }
             }catch (IndexOutOfBoundsException e){
@@ -145,6 +157,7 @@ public class MusicPlay extends Service {
 
         iF.addAction(MusicSwitch.Action);
         iF.addAction(PlayerModeSwitch.Action);
+        iF.addAction(MusicSeek.Action);
         LocalBroadcastManager.getInstance(this).registerReceiver(ControlReceiver, iF);
         logger.printAndWrite(Level.STEP,new Tags.MusicTag.MusicManage(),"Register Receiver: ControlReceiver");
         foreground();

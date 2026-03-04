@@ -5,6 +5,7 @@ import android.content.Intent;
 public class MusicPlayInit extends Intent {
     public static final String Action = "sdjini.solution.MUSIC_PLAY_INIT";
     public MusicPlayInit() {
+        super();
         setAction(Action);
     }
 }

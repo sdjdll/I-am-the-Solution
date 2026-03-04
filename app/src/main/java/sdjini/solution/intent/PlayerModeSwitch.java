@@ -14,6 +14,7 @@ public class PlayerModeSwitch extends Intent {
         public static final String State = "State";
     }
     public PlayerModeSwitch(String mode, boolean state) {
+        super();
         setAction(Action);
         putExtra(Name.Mode, mode).putExtra(Name.State, state);
     }
