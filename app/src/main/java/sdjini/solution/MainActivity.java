@@ -22,6 +22,7 @@ import java.util.Objects;
 
 import sdjini.solution.file_core.FileManager;
 import sdjini.solution.file_core.MusicFile;
+import sdjini.solution.file_core.SpManager;
 import sdjini.solution.intent.MusicControl;
 import sdjini.solution.intent.MusicNext;
 import sdjini.solution.intent.MusicPrevious;
@@ -100,12 +101,14 @@ public class MainActivity extends AppCompatActivity {
         Switch Sw_Loop = findViewById(R.id.Sw_Loop);
         Switch Sw_Random = findViewById(R.id.Sw_Random);
         Switch Sw_Repeat = findViewById(R.id.Sw_Repeat);
+        SpManager sp = new SpManager(this);
         Sw_Loop.setOnCheckedChangeListener((btn, b) -> {
             if (b){
                 Sw_Random.setChecked(false);
                 Sw_Repeat.setChecked(false);
             }
             lb.sendBroadcast(new PlayerModeSwitch(PlayerModeSwitch.Mode.Loop, b));
+            sp.write(SpManager.Keys.Mode, PlayerModeSwitch.Mode.Loop);
             logger.printAndWrite(Level.INFO, new Tags.MusicTag.IntentTrans(), "Mode Switch Loop", "" + b);
         });
         Sw_Random.setOnCheckedChangeListener((btn,b)->{
@@ -114,6 +117,7 @@ public class MainActivity extends AppCompatActivity {
                 Sw_Repeat.setChecked(false);
             }
             lb.sendBroadcast(new PlayerModeSwitch(PlayerModeSwitch.Mode.Random, b));
+            sp.write(SpManager.Keys.Mode, PlayerModeSwitch.Mode.Random);
             logger.printAndWrite(Level.INFO, new Tags.MusicTag.IntentTrans(), "Mode Switch Random", "" + b);
         });
         Sw_Repeat.setOnCheckedChangeListener((btn,b)->{
@@ -122,8 +126,15 @@ public class MainActivity extends AppCompatActivity {
                 Sw_Random.setChecked(false);
             }
             lb.sendBroadcast(new PlayerModeSwitch(PlayerModeSwitch.Mode.Repeat, b));
+            sp.write(SpManager.Keys.Mode, PlayerModeSwitch.Mode.Repeat);
             logger.printAndWrite(Level.INFO, new Tags.MusicTag.IntentTrans(), "Mode Switch Repeat", "" + b);
         });
+        String mode = sp.readString(SpManager.Keys.Mode,"");
+        switch (mode) {
+            case PlayerModeSwitch.Mode.Loop -> Sw_Loop.setChecked(true);
+            case PlayerModeSwitch.Mode.Random -> Sw_Random.setChecked(true);
+            case PlayerModeSwitch.Mode.Repeat -> Sw_Repeat.setChecked(true);
+        }
 
         IntentFilter iF = new IntentFilter();
         iF.addAction(UpdateProgress.Action);

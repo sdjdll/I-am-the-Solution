@@ -10,6 +10,7 @@ import androidx.annotation.Size;
 public class SpManager {
     public static final class Keys{
         public static final String ChooseDir = "ChooseDir";
+        public static final String Mode = "Mode";
     }
     public static final String Setting = "Settings";
     private final SharedPreferences sharedPreferences;

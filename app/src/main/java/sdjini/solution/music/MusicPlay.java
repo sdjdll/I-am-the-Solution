@@ -29,6 +29,7 @@ import java.util.Random;
 import sdjini.solution.MainActivity;
 import sdjini.solution.R;
 import sdjini.solution.file_core.MusicFile;
+import sdjini.solution.file_core.SpManager;
 import sdjini.solution.intent.MusicControl;
 import sdjini.solution.intent.MusicNext;
 import sdjini.solution.intent.MusicPrevious;
@@ -174,6 +175,7 @@ public class MusicPlay extends Service {
         });
         mainHandler = new Handler(Looper.getMainLooper());
         logger.printAndWrite(Level.INFO, new Tags.MusicTag.MusicManage(), "MusicPlay Created");
+        LocalBroadcastManager.getInstance(this).sendBroadcast(new PlayerModeSwitch(new SpManager(this).readString(SpManager.Keys.Mode,""), true));
     }
     public static void updateMusicList(List<MusicFile> list){
         playList = list;
