@@ -47,7 +47,7 @@ public class MusicPlay extends Service {
     public enum State{
         play,
         stop,
-        pause;
+        pause
     }
     private static List<MusicFile> playList;
     public State state = State.stop;
@@ -306,6 +306,7 @@ public class MusicPlay extends Service {
     @Override
     public void onDestroy() {
         LocalBroadcastManager.getInstance(this).unregisterReceiver(ControlReceiver);
+        mainHandler.removeCallbacks(progressRunnable);
         mediaPlayer.release();
         super.onDestroy();
     }

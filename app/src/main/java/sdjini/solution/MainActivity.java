@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
 import android.widget.LinearLayout;
-import android.widget.ProgressBar;
 import android.widget.SeekBar;
 import android.widget.Switch;
 import android.widget.TextView;
@@ -129,8 +128,7 @@ public class MainActivity extends AppCompatActivity {
             sp.write(SpManager.Keys.Mode, PlayerModeSwitch.Mode.Repeat);
             logger.printAndWrite(Level.INFO, new Tags.MusicTag.IntentTrans(), "Mode Switch Repeat", "" + b);
         });
-        String mode = sp.readString(SpManager.Keys.Mode,"");
-        switch (mode) {
+        switch (sp.readString(SpManager.Keys.Mode,"")) {
             case PlayerModeSwitch.Mode.Loop -> Sw_Loop.setChecked(true);
             case PlayerModeSwitch.Mode.Random -> Sw_Random.setChecked(true);
             case PlayerModeSwitch.Mode.Repeat -> Sw_Repeat.setChecked(true);

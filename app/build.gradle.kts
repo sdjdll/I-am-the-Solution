@@ -3,6 +3,14 @@ plugins {
 }
 
 android {
+    signingConfigs {
+        getByName("debug") {
+            storeFile = file("D:\\Users\\sdjini\\Desktop\\杂项\\sdjini.jks")
+            storePassword = "Rrhar\'il"
+            keyAlias = "sdjini"
+            keyPassword = "Rrhar\'il"
+        }
+    }
     namespace = "sdjini.solution"
     compileSdk {
         version = release(36) {
