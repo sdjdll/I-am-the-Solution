@@ -20,4 +20,6 @@
     <string name="control">control</string>
     <string name="notification">Notification permission</string>
     <string name="media">Media manage permission</string>
+    <string name="left">left </string>
+    <string name="right">right</string>
 </resources>

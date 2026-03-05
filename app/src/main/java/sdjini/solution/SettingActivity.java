@@ -32,11 +32,8 @@ public class SettingActivity extends AppCompatActivity {
                 Intent data = result.getData();
                 Uri treeUri = data.getData();
                 if (treeUri != null) {
-                    String folderPath = getFolderPathFromUri(treeUri);
-                    if (folderPath != null) {
-                        spManager.write(SpManager.Keys.ChooseDir, folderPath);
-                        getContentResolver().takePersistableUriPermission(treeUri, Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
-                    }
+                    spManager.write(SpManager.Keys.ChooseDir, String.valueOf(treeUri));
+                    getContentResolver().takePersistableUriPermission(treeUri, Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
                 }
             }
             finish();
@@ -84,6 +81,7 @@ public class SettingActivity extends AppCompatActivity {
         folderPickerLauncher.launch(intent);
     }
 
+    /// @deprecated 应使用Uri.getPath()
     private String getFolderPathFromUri(Uri treeUri) {
         String volumePath = getVolumePath(treeUri);
         if (volumePath == null) return null;

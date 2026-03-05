@@ -35,6 +35,7 @@ import sdjini.solution.intent.MusicNext;
 import sdjini.solution.intent.MusicPrevious;
 import sdjini.solution.intent.MusicSeek;
 import sdjini.solution.intent.MusicSwitch;
+import sdjini.solution.intent.MusicVolume;
 import sdjini.solution.intent.PlayerModeSwitch;
 import sdjini.solution.intent.UpdateProgress;
 import sdjini.solution.log.Level;
@@ -66,22 +67,27 @@ public class MusicPlay extends Service {
                     case MusicNext.Action -> Next();
                     case MusicSwitch.Action -> Switch(intent.getIntExtra(MusicSwitch.Name.ChoseNumber, -1));
                     case PlayerModeSwitch.Action -> switchMode(intent.getStringExtra(PlayerModeSwitch.Name.Mode), intent.getBooleanExtra(PlayerModeSwitch.Name.State, false));
-                    case MusicSeek.Action -> {
-                        mainHandler.removeCallbacks(progressRunnable);
-                        try{
-                            logger.printAndWrite(Level.STEP, new Tags.MusicTag.MusicManage(), "seek to" + intent.getIntExtra(MusicSeek.Name.Progress, 0));
-                            mediaPlayer.seekTo(intent.getIntExtra(MusicSeek.Name.Progress, 0));
-                            mediaPlayer.start();
-                        } catch (IllegalStateException e) {
-                            logger.printAndWrite(Level.ERROR, new Tags.MusicTag.MusicManage(),"Player not Prepared",e,"来碗炒饭！");
-                        }
-                        mainHandler.post(progressRunnable);
-                    }
+                    case MusicSeek.Action -> seek(intent.getIntExtra(MusicSeek.Name.Progress, 0));
+                    case MusicVolume.Action -> setVolume(intent.getFloatExtra(MusicVolume.Name.Left, 0.5f), intent.getFloatExtra(MusicVolume.Name.Right, 0.5f));
                     case null, default -> logger.printAndWrite(Level.ERROR, new Tags.MusicTag.IntentTrans(), "Unknow Intent", new IllegalArgumentException());
                 }
             }catch (IndexOutOfBoundsException e){
                 logger.printAndWrite(Level.FATAL,new Tags.MusicTag.MusicManage(),"No Music", e);
             }
+        }
+        private void setVolume(float left, float right){
+            mediaPlayer.setVolume(left, right);
+        }
+        private void seek(int progress){
+            mainHandler.removeCallbacks(progressRunnable);
+            try{
+                logger.printAndWrite(Level.STEP, new Tags.MusicTag.MusicManage(), "seek to" + progress);
+                mediaPlayer.seekTo(progress);
+                mediaPlayer.start();
+            } catch (IllegalStateException e) {
+                logger.printAndWrite(Level.ERROR, new Tags.MusicTag.MusicManage(),"Player not Prepared",e,"来碗炒饭！");
+            }
+            mainHandler.post(progressRunnable);
         }
 
         private void switchMode(String mode, boolean state) {
@@ -159,6 +165,7 @@ public class MusicPlay extends Service {
         iF.addAction(MusicSwitch.Action);
         iF.addAction(PlayerModeSwitch.Action);
         iF.addAction(MusicSeek.Action);
+        iF.addAction(MusicVolume.Action);
         LocalBroadcastManager.getInstance(this).registerReceiver(ControlReceiver, iF);
         logger.printAndWrite(Level.STEP,new Tags.MusicTag.MusicManage(),"Register Receiver: ControlReceiver");
         foreground();
@@ -175,7 +182,8 @@ public class MusicPlay extends Service {
         });
         mainHandler = new Handler(Looper.getMainLooper());
         logger.printAndWrite(Level.INFO, new Tags.MusicTag.MusicManage(), "MusicPlay Created");
-        LocalBroadcastManager.getInstance(this).sendBroadcast(new PlayerModeSwitch(new SpManager(this).readString(SpManager.Keys.Mode,""), true));
+        LocalBroadcastManager.getInstance(this).sendBroadcast(new PlayerModeSwitch(new SpManager(this).readString(SpManager.Keys.Mode, ""), true));
+        LocalBroadcastManager.getInstance(this).sendBroadcast(new MusicVolume(new SpManager(this).readInt(SpManager.Keys.volumeL, 50) / 100F, new SpManager(this).readInt(SpManager.Keys.volumeL, 50) / 100F));
     }
     public static void updateMusicList(List<MusicFile> list){
         playList = list;
@@ -206,7 +214,7 @@ public class MusicPlay extends Service {
         try {
             nowPlaying = musicFile;
             mediaPlayer.reset();
-            mediaPlayer.setDataSource(musicFile.getPath());
+            mediaPlayer.setDataSource(this,musicFile.getUri());
             mediaPlayer.prepare();
             logger.printAndWrite(Level.INFO,new Tags.MusicTag.MusicManage(),"GetData",musicFile.Title ," "+ musicFile.getLengthAsync());
         } catch (IOException ignored) {}

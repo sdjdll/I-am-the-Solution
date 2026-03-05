@@ -1,7 +1,9 @@
 package sdjini.solution.file_core;
 
+import android.content.Context;
 import android.media.MediaMetadataRetriever;
 import android.media.MediaPlayer;
+import android.net.Uri;
 
 import androidx.annotation.NonNull;
 
@@ -12,27 +14,26 @@ import java.util.Locale;
 import java.util.Objects;
 
 import sdjini.solution.log.Logger;
+import sdjini.solution.music.MusicTool;
 
-public class MusicFile extends File {
+public class MusicFile {
     public String Title;
 
     public int length;
     public int now = 0;
-    public String musicFilePath;
+    public Uri musicFileUri;
     boolean isPrepared = false;
     private final Object syncLock = new Object();
-    public MusicFile(String musicFilePath) {
-        super(musicFilePath);
-        this.musicFilePath = musicFilePath;
-
+    public MusicFile(Context context, @NonNull Uri uri) {
+        musicFileUri = uri;
         try(MediaMetadataRetriever retriever = new MediaMetadataRetriever()) {
-            retriever.setDataSource(musicFilePath);
-            Title = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE) == null ? new File(musicFilePath).getName() : retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE);
+            retriever.setDataSource(context,uri);
+            Title = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE) == null ? MusicTool.getFileName(context, uri) : retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE);
         }catch (IOException ignored) {}
         new Thread(()->{
             try {
                 MediaPlayer mediaPlayer = new MediaPlayer();
-                mediaPlayer.setDataSource(musicFilePath);
+                mediaPlayer.setDataSource(context,uri);
                 mediaPlayer.prepare();
                 length = mediaPlayer.getDuration();
                 mediaPlayer.release();
@@ -41,6 +42,10 @@ public class MusicFile extends File {
                     syncLock.notify();
                 }
             } catch (IOException ignored) {}}).start();
+    }
+
+    public Uri getUri(){
+        return musicFileUri;
     }
 
     public String getLength() {

@@ -16,6 +16,7 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
@@ -27,6 +28,7 @@ import sdjini.solution.intent.MusicNext;
 import sdjini.solution.intent.MusicPrevious;
 import sdjini.solution.intent.MusicSeek;
 import sdjini.solution.intent.MusicSwitch;
+import sdjini.solution.intent.MusicVolume;
 import sdjini.solution.intent.PlayerModeSwitch;
 import sdjini.solution.intent.Reflash;
 import sdjini.solution.intent.UpdateProgress;
@@ -51,6 +53,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        SpManager sp = new SpManager(this);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main_activity);
         logger = new Logger(this);
@@ -66,6 +69,43 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.Btn_Next).setOnClickListener(v -> lb.sendBroadcast(new MusicNext()));
         findViewById(R.id.Btn_Previous).setOnClickListener(v -> lb.sendBroadcast(new MusicPrevious()));
         findViewById(R.id.Btn_Contrl).setOnClickListener(v -> lb.sendBroadcast(new MusicControl()));
+
+        SeekBar Sb_Left = findViewById(R.id.Sb_Left);
+        SeekBar Sb_Right = findViewById(R.id.Sb_Right);
+        Sb_Left.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                lb.sendBroadcast(new MusicVolume(progress / 100f, Sb_Right.getProgress() / 100f));
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+                sp.write(SpManager.Keys.volumeL, seekBar.getProgress());
+            }
+        });
+        Sb_Right.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                lb.sendBroadcast(new MusicVolume(Sb_Left.getProgress() / 100f, progress / 100f));
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+                sp.write(SpManager.Keys.volumeR, seekBar.getProgress());
+            }
+        });
+        Sb_Left.setProgress(sp.readInt(SpManager.Keys.volumeL, 50));
+        Sb_Right.setProgress(sp.readInt(SpManager.Keys.volumeR, 50));
 
         SeekBar Sb = findViewById(R.id.Sb_Time);
         Sb.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
@@ -100,7 +140,6 @@ public class MainActivity extends AppCompatActivity {
         Switch Sw_Loop = findViewById(R.id.Sw_Loop);
         Switch Sw_Random = findViewById(R.id.Sw_Random);
         Switch Sw_Repeat = findViewById(R.id.Sw_Repeat);
-        SpManager sp = new SpManager(this);
         Sw_Loop.setOnCheckedChangeListener((btn, b) -> {
             if (b){
                 Sw_Random.setChecked(false);
@@ -145,8 +184,9 @@ public class MainActivity extends AppCompatActivity {
 
     private void updateList(){
         FileManager fm = new FileManager(this);
-        musicList = FileManager.filter(fm.listDir().toArray(new File[0]), Types);
-        logger.printAndWrite(Level.STEP, new Tags.MainTag.Default(), fm.listDir().toString());
+        fm.setUri(new SpManager(this).readString(SpManager.Keys.ChooseDir, null));
+        musicList = fm.listMusic(Types);
+        logger.printAndWrite(Level.STEP, new Tags.MainTag.Default(), Arrays.toString(musicList.toArray()));
         LinearLayout Linear = findViewById(R.id.Linear_List);
         Linear.removeAllViews();
         int num = 0;
@@ -155,7 +195,7 @@ public class MainActivity extends AppCompatActivity {
             textView.setText(mf.Title);
             int temp = num;
             textView.setOnClickListener(v -> LocalBroadcastManager.getInstance(this).sendBroadcast(new MusicSwitch(temp)));
-            logger.printAndWrite(Level.STEP, new Tags.MainTag.Default(), "File: " + mf.getPath(), "Title: " + mf.Title);
+            logger.printAndWrite(Level.STEP, new Tags.MainTag.Default(), "File: " + mf.Title, "Title: " + mf.Title);
             Linear.addView(textView);
             num++;
         }
