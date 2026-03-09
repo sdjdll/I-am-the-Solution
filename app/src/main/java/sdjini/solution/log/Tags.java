@@ -63,4 +63,14 @@ public final class Tags {
             }
         }
     }
+
+    public static final class ListenerTag{
+        public static final class PhoneStateListener implements Tag{
+            @NonNull
+            @Override
+            public String toString() {
+                return "ListenerTag.PhoneStateListener";
+            }
+        }
+    }
 }

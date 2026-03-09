@@ -74,35 +74,19 @@ public class MainActivity extends AppCompatActivity {
         SeekBar Sb_Right = findViewById(R.id.Sb_Right);
         Sb_Left.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
-            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                lb.sendBroadcast(new MusicVolume(progress / 100f, Sb_Right.getProgress() / 100f));
-            }
-
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {lb.sendBroadcast(new MusicVolume(progress / 100f, Sb_Right.getProgress() / 100f));}
             @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-
-            }
-
+            public void onStartTrackingTouch(SeekBar seekBar) {}
             @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-                sp.write(SpManager.Keys.volumeL, seekBar.getProgress());
-            }
+            public void onStopTrackingTouch(SeekBar seekBar) {sp.write(SpManager.Keys.volumeL, seekBar.getProgress());}
         });
         Sb_Right.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
-            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                lb.sendBroadcast(new MusicVolume(Sb_Left.getProgress() / 100f, progress / 100f));
-            }
-
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {lb.sendBroadcast(new MusicVolume(Sb_Left.getProgress() / 100f, progress / 100f));}
             @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-
-            }
-
+            public void onStartTrackingTouch(SeekBar seekBar) {}
             @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-                sp.write(SpManager.Keys.volumeR, seekBar.getProgress());
-            }
+            public void onStopTrackingTouch(SeekBar seekBar) {sp.write(SpManager.Keys.volumeR, seekBar.getProgress());}
         });
         Sb_Left.setProgress(sp.readInt(SpManager.Keys.volumeL, 50));
         Sb_Right.setProgress(sp.readInt(SpManager.Keys.volumeR, 50));
@@ -123,9 +107,7 @@ public class MainActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-                lb.unregisterReceiver(progressReceiver);
-            }
+            public void onStartTrackingTouch(SeekBar seekBar) {lb.unregisterReceiver(progressReceiver);}
 
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
@@ -184,7 +166,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void updateList(){
         FileManager fm = new FileManager(this);
-        fm.setUri(new SpManager(this).readString(SpManager.Keys.ChooseDir, null));
+        fm.setUri(new SpManager(this).readString(SpManager.Keys.ChooseDir, (String) null));
         musicList = fm.listMusic(Types);
         logger.printAndWrite(Level.STEP, new Tags.MainTag.Default(), Arrays.toString(musicList.toArray()));
         LinearLayout Linear = findViewById(R.id.Linear_List);

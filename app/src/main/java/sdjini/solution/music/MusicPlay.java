@@ -11,6 +11,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.BitmapFactory;
+import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Build;
 import android.os.Handler;
@@ -51,11 +52,14 @@ public class MusicPlay extends Service {
         pause
     }
     private static List<MusicFile> playList;
-    public State state = State.stop;
+    public static State state = State.stop;
     private MediaPlayer mediaPlayer;
     private MusicFile nowPlaying;
     private Logger logger;
     private Handler mainHandler;
+    private PhoneStateDetector psd;
+    private LocalBroadcastManager lb;
+    private boolean needRestart = true;
     private final BroadcastReceiver ControlReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -154,8 +158,24 @@ public class MusicPlay extends Service {
         super.onCreate();
         logger = new Logger(this);
         playList = MainActivity.musicList;
-        logger.printAndWrite(Level.INFO,new Tags.MusicTag.MusicManage(), "Sync MusicFile", Arrays.toString(playList.toArray()));
         mediaPlayer = new MediaPlayer();
+        psd = new PhoneStateDetector(this);
+        lb = LocalBroadcastManager.getInstance(this);
+        psd.startListener(new PhoneStateDetector.OnPhoneStateChangedListener() {
+            @Override
+            public void onPhoneStart() {
+                if(state == State.play) lb.sendBroadcast(new MusicControl());
+                needRestart = (state == State.play);
+                logger.printAndWrite(Level.INFO, new Tags.ListenerTag.PhoneStateListener(), "onPhoneStart Pause");
+            }
+
+            @Override
+            public void onPhoneEnd() {
+                if (needRestart && state == State.pause) lb.sendBroadcast(new MusicControl());
+                logger.printAndWrite(Level.INFO, new Tags.ListenerTag.PhoneStateListener(), "onPhoneStart Restart");
+            }
+        });
+        logger.printAndWrite(Level.INFO,new Tags.MusicTag.MusicManage(), "Sync MusicFile", Arrays.toString(playList.toArray()));
         IntentFilter iF = new IntentFilter();
         iF.addAction(MusicNext.Action);
         iF.addAction(MusicControl.Action);
@@ -166,13 +186,14 @@ public class MusicPlay extends Service {
         iF.addAction(PlayerModeSwitch.Action);
         iF.addAction(MusicSeek.Action);
         iF.addAction(MusicVolume.Action);
-        LocalBroadcastManager.getInstance(this).registerReceiver(ControlReceiver, iF);
+        lb.registerReceiver(ControlReceiver, iF);
         logger.printAndWrite(Level.STEP,new Tags.MusicTag.MusicManage(),"Register Receiver: ControlReceiver");
         foreground();
         NotificationCompat.Action actionPrevious = new NotificationCompat.Action.Builder(null, getString(R.string.previous), PendingIntent.getBroadcast(this, 0, new MusicPrevious(), PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE)).build();
         NotificationCompat.Action actionControl = new NotificationCompat.Action.Builder(null, getString(R.string.control), PendingIntent.getBroadcast(this, 1, new MusicControl(), PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE)).build();
         NotificationCompat.Action actionNext = new NotificationCompat.Action.Builder(null, getString(R.string.next), PendingIntent.getBroadcast(this, 2, new MusicNext(), PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE)).build();
         foregroundNotification.addAction(actionPrevious).addAction(actionControl).addAction(actionNext);
+        foregroundNotification.setContentIntent(PendingIntent.getActivity(this, 0, new Intent(this, MainActivity.class), PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE));
         mediaPlayer.setOnCompletionListener(mp -> {
             try {
                 nowPlaying.now = 0;
@@ -182,8 +203,8 @@ public class MusicPlay extends Service {
         });
         mainHandler = new Handler(Looper.getMainLooper());
         logger.printAndWrite(Level.INFO, new Tags.MusicTag.MusicManage(), "MusicPlay Created");
-        LocalBroadcastManager.getInstance(this).sendBroadcast(new PlayerModeSwitch(new SpManager(this).readString(SpManager.Keys.Mode, ""), true));
-        LocalBroadcastManager.getInstance(this).sendBroadcast(new MusicVolume(new SpManager(this).readInt(SpManager.Keys.volumeL, 50) / 100F, new SpManager(this).readInt(SpManager.Keys.volumeL, 50) / 100F));
+        lb.sendBroadcast(new PlayerModeSwitch(new SpManager(this).readString(SpManager.Keys.Mode, ""), true));
+        lb.sendBroadcast(new MusicVolume(new SpManager(this).readInt(SpManager.Keys.volumeL, 50) / 100F, new SpManager(this).readInt(SpManager.Keys.volumeL, 50) / 100F));
     }
     public static void updateMusicList(List<MusicFile> list){
         playList = list;
@@ -224,8 +245,7 @@ public class MusicPlay extends Service {
         setPlayer(playList.get(playN));
     }
     private void play(){
-        if (!mediaPlayer.isPlaying())
-            mediaPlayer.start();
+        if (!mediaPlayer.isPlaying()) mediaPlayer.start();
         sendNotification(getString(R.string.app_name),this.getString(R.string.IsPlaying) + " " + nowPlaying.Title);
         state = State.play;
         mainHandler.removeCallbacks(progressRunnable);
@@ -313,7 +333,7 @@ public class MusicPlay extends Service {
 
     @Override
     public void onDestroy() {
-        LocalBroadcastManager.getInstance(this).unregisterReceiver(ControlReceiver);
+        lb.unregisterReceiver(ControlReceiver);
         mainHandler.removeCallbacks(progressRunnable);
         mediaPlayer.release();
         super.onDestroy();

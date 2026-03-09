@@ -22,8 +22,8 @@ android {
         applicationId = "sdjini.solution"
         minSdk = 26
         targetSdk = 36
-        versionCode = 8
-        versionName = "1.1.0 - HuaweiPatched"
+        versionCode = 11
+        versionName = "1.1.3 - atPause not restart"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
