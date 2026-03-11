@@ -333,7 +333,7 @@ public class MusicPlay extends Service {
                 sp.write(SpManager.Keys.lastTime, currentPosition);
                 sp.write(SpManager.Keys.lastPlay, playN);
                 handler.removeCallbacks(this);
-                handler.postDelayed(this, 500);
+                handler.postDelayed(this, 750);
             }
         }
     };
