@@ -22,4 +22,5 @@
     <string name="media">媒体管理</string>
     <string name="left">左：</string>
     <string name="right">右：</string>
+    <string name="backup">重启回溯</string>
 </resources>

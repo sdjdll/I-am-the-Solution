@@ -8,6 +8,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.provider.DocumentsContract;
 import android.provider.Settings;
+import android.widget.Switch;
 import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
@@ -73,6 +74,10 @@ public class SettingActivity extends AppCompatActivity {
         });
         findViewById(R.id.Tv_media).setOnClickListener(v -> Toast.makeText(this, getString(R.string.goto_permission), Toast.LENGTH_SHORT).show());
         findViewById(R.id.Tv_notification).setOnClickListener(v -> Toast.makeText(this, getString(R.string.goto_foreground), Toast.LENGTH_SHORT).show());
+        Switch Sw_Backup = findViewById(R.id.Sw_Backup);
+        Sw_Backup.setChecked(spManager.readBoolean(SpManager.Keys.NeedBackup, false));
+        Sw_Backup.setOnCheckedChangeListener((v,b)-> spManager.write(SpManager.Keys.NeedBackup, b));
+
     }
 
 

@@ -60,6 +60,7 @@ public class MusicPlay extends Service {
     private PhoneStateDetector psd;
     private LocalBroadcastManager lb;
     private boolean needRestart = true;
+    private Context context;
     private final BroadcastReceiver ControlReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -161,6 +162,8 @@ public class MusicPlay extends Service {
         mediaPlayer = new MediaPlayer();
         psd = new PhoneStateDetector(this);
         lb = LocalBroadcastManager.getInstance(this);
+        this.context = this;
+
         psd.startListener(new PhoneStateDetector.OnPhoneStateChangedListener() {
             @Override
             public void onPhoneStart() {
@@ -203,6 +206,12 @@ public class MusicPlay extends Service {
         });
         mainHandler = new Handler(Looper.getMainLooper());
         logger.printAndWrite(Level.INFO, new Tags.MusicTag.MusicManage(), "MusicPlay Created");
+
+        SpManager sp = new SpManager(this);
+        if (sp.readBoolean(SpManager.Keys.NeedBackup, false)) {
+            setPlayer(playList.get(sp.readInt(SpManager.Keys.lastPlay, 0)));
+            lb.sendBroadcast(new MusicSeek(sp.readInt(SpManager.Keys.lastTime, 0)));
+        }
         lb.sendBroadcast(new PlayerModeSwitch(new SpManager(this).readString(SpManager.Keys.Mode, ""), true));
         lb.sendBroadcast(new MusicVolume(new SpManager(this).readInt(SpManager.Keys.volumeL, 50) / 100F, new SpManager(this).readInt(SpManager.Keys.volumeL, 50) / 100F));
     }
@@ -320,6 +329,9 @@ public class MusicPlay extends Service {
                 LocalBroadcastManager.getInstance(MusicPlay.this).sendBroadcast(updateProgress);
 
                 logger.printAndWrite(Level.STEP, new Tags.MusicTag.MusicManage(), "UpdateProgress");
+                SpManager sp = new SpManager(context);
+                sp.write(SpManager.Keys.lastTime, currentPosition);
+                sp.write(SpManager.Keys.lastPlay, playN);
                 handler.removeCallbacks(this);
                 handler.postDelayed(this, 500);
             }
@@ -336,6 +348,9 @@ public class MusicPlay extends Service {
         lb.unregisterReceiver(ControlReceiver);
         mainHandler.removeCallbacks(progressRunnable);
         mediaPlayer.release();
+        SpManager Sm = new SpManager(this);
+        Sm.write(SpManager.Keys.lastPlay, playN);
+        Sm.write(SpManager.Keys.lastTime, nowPlaying.now);
         super.onDestroy();
     }
 }

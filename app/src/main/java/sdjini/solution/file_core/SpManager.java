@@ -13,6 +13,9 @@ public class SpManager {
         public static final String Mode = "Mode";
         public static final String volumeL = "VolumeL";
         public static final String volumeR = "volumeR";
+        public static final String lastPlay = "LastPlay";
+        public static final String lastTime = "LastName";
+        public static final String NeedBackup = "NeedBackup";
     }
     public static final String Setting = "Settings";
     private final SharedPreferences sharedPreferences;

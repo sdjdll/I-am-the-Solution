@@ -5,6 +5,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
+import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.SeekBar;
 import android.widget.Switch;
@@ -48,7 +50,9 @@ public class MainActivity extends AppCompatActivity {
             ".flac",                                                                // FLAC
             ".midi", ".mid", ".xmf", ".mxmf", ".rtttl", ".rtx", ".ota", ".imy",     // MIDI
             ".ogg", ".mkv",                                                         // Vorbis
-            ".wav"};                                                                // PCM/WAVE
+            ".wav",                                                                 // PCM/WAVE
+            ".m4s"                                                                  // BiliBili
+    };
     public static List<MusicFile> musicList = new ArrayList<>();
 
     @Override
@@ -68,7 +72,12 @@ public class MainActivity extends AppCompatActivity {
 
         findViewById(R.id.Btn_Next).setOnClickListener(v -> lb.sendBroadcast(new MusicNext()));
         findViewById(R.id.Btn_Previous).setOnClickListener(v -> lb.sendBroadcast(new MusicPrevious()));
-        findViewById(R.id.Btn_Contrl).setOnClickListener(v -> lb.sendBroadcast(new MusicControl()));
+        ImageButton Btn_Control = findViewById(R.id.Btn_Contrl);
+        Btn_Control.setOnClickListener(v -> lb.sendBroadcast(new MusicControl()));
+        Btn_Control.setOnLongClickListener(v -> {
+            lb.sendBroadcast(new MusicSwitch(0));
+            return true;
+        });
 
         SeekBar Sb_Left = findViewById(R.id.Sb_Left);
         SeekBar Sb_Right = findViewById(R.id.Sb_Right);
@@ -96,8 +105,8 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 if (!fromUser) return;
-                int pN = (int) ((seekBar.getProgress() / 100f) * playerLength);
                 StringBuilder sb = new StringBuilder();
+                int pN = progress * 1000;
                 sb.append(MusicTool.getFormatTime(pN, pN <= 3600000 ? "mm:ss" : "H:mm:ss"))
                         .append("/")
                         .append(MusicTool.getFormatTime(playerLength, playerLength <= 3600000 ? "mm:ss" : "H:mm:ss"))
@@ -107,14 +116,16 @@ public class MainActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {lb.unregisterReceiver(progressReceiver);}
+            public void onStartTrackingTouch(SeekBar seekBar) {
+                lb.unregisterReceiver(progressReceiver);
+            }
 
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
                 IntentFilter iF = new IntentFilter();
                 iF.addAction(UpdateProgress.Action);
                 lb.registerReceiver(progressReceiver, iF);
-                lb.sendBroadcast(new MusicSeek((int) ((seekBar.getProgress() / 100f) * playerLength)));
+                lb.sendBroadcast(new MusicSeek(seekBar.getProgress() * 1000));
             }
         });
         startForegroundService(new Intent(this, MusicPlay.class));
@@ -161,6 +172,7 @@ public class MainActivity extends AppCompatActivity {
         iF = new IntentFilter();
         iF.addAction(Reflash.Action);
         lb.registerReceiver(Update, iF);
+
         logger.printAndWrite(Level.INFO, new Tags.MainTag.Default(), "Register Receiver");
     }
 
@@ -186,9 +198,9 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onDestroy() {
-        super.onDestroy();
         LocalBroadcastManager.getInstance(this).unregisterReceiver(progressReceiver);
         LocalBroadcastManager.getInstance(this).unregisterReceiver(Update);
+        super.onDestroy();
     }
 
     private final BroadcastReceiver progressReceiver = new BroadcastReceiver() {
@@ -198,6 +210,8 @@ public class MainActivity extends AppCompatActivity {
                 logger.printAndWrite(Level.STEP,new Tags.MainTag.UpdateProgress(),"Start Update");
                 int playerNow = intent.getIntExtra(UpdateProgress.Name.NOW, 0);
                 playerLength = intent.getIntExtra(UpdateProgress.Name.LENGTH, 0);
+                SeekBar Sb = findViewById(R.id.Sb_Time);
+                Sb.setMax(playerLength / 1000);
                 StringBuilder sb = new StringBuilder();
                 sb.append(MusicTool.getFormatTime(playerNow, playerNow <= 3600000 ? "mm:ss" : "H:mm:ss"))
                         .append("/")
@@ -207,8 +221,7 @@ public class MainActivity extends AppCompatActivity {
                 tv.setText(sb);
                 tv = findViewById(R.id.Tv_NowPlayingName);
                 tv.setText(intent.getStringExtra(UpdateProgress.Name.MUSIC_NAME));
-                SeekBar Sb = findViewById(R.id.Sb_Time);
-                Sb.setProgress(Math.round((playerNow / (float) playerLength) * 100));
+                Sb.setProgress(playerNow / 1000);
                 logger.printAndWrite(Level.STEP,new Tags.MainTag.Default(),"onUpdate");
             }
         }
