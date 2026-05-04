@@ -3,14 +3,6 @@ plugins {
 }
 
 android {
-    signingConfigs {
-        getByName("debug") {
-            storeFile = file("D:\\Users\\sdjini\\Desktop\\杂项\\sdjini.jks")
-            storePassword = "Rrhar\'il"
-            keyAlias = "sdjini"
-            keyPassword = "Rrhar\'il"
-        }
-    }
     namespace = "sdjini.solution"
     compileSdk {
         version = release(36) {
@@ -22,15 +14,16 @@ android {
         applicationId = "sdjini.solution"
         minSdk = 26
         targetSdk = 36
-        versionCode = 12
-        versionName = "1.1.4"
+        versionCode = 13
+        versionName = "1.1.5"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
     buildTypes {
         release {
-            isMinifyEnabled = false
+            isMinifyEnabled = true
+            isShrinkResources = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
@@ -41,15 +34,26 @@ android {
         sourceCompatibility = JavaVersion.VERSION_21
         targetCompatibility = JavaVersion.VERSION_21
     }
+    packaging{
+        resources{
+            excludes += setOf("META-INF/**")
+            excludes += setOf("DebugProbesKt.bin")
+            excludes += setOf("kotlin/**")
+            excludes += setOf("res/**")
+        }
+    }
 }
 
 dependencies {
-    implementation(libs.appcompat)
-    implementation(libs.material)
+//    implementation(libs.appcompat)
+//    implementation(libs.material)
     implementation(libs.activity)
-    implementation(libs.constraintlayout)
-    implementation(libs.recyclerview)
-    implementation(libs.cardview)
+    implementation("androidx.activity:activity:1.9.0")
+    implementation("androidx.localbroadcastmanager:localbroadcastmanager:1.1.0")
+    implementation("androidx.documentfile:documentfile:1.1.0")
+//    implementation(libs.constraintlayout)
+//    implementation(libs.recyclerview)
+//    implementation(libs.cardview)
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)

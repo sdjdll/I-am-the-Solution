@@ -1,46 +1,41 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity">
+    tools:context=".MainActivity"
+    android:orientation="vertical">
 
-    <androidx.appcompat.widget.Toolbar
-        android:id="@+id/toolbar2"
+    <Toolbar
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="?attr/colorPrimary"
-        android:minHeight="?attr/actionBarSize"
-        android:theme="?attr/actionBarTheme"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent">
+        android:background="@drawable/rdb">
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:freezesText="true"
+            android:layout_marginTop="24dp"
             android:text="@string/app_name"
-            android:textSize="20sp"
-            tools:layout_editor_absoluteX="16dp"
-            tools:layout_editor_absoluteY="15dp" />
-    </androidx.appcompat.widget.Toolbar>
+            android:textSize="20sp" />
+    </Toolbar>
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_marginStart="16dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="0"
+        android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
-        android:layout_marginEnd="16dp"
+        android:layout_marginEnd="8dp"
+        android:padding="8dp"
         android:orientation="vertical"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/toolbar2">
+        android:background="@drawable/rd"
+        android:backgroundTint="#3fff">
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:orientation="horizontal">
 
             <TextView
@@ -71,7 +66,7 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:orientation="vertical">
 
             <LinearLayout
@@ -92,7 +87,9 @@
                 <SeekBar
                     android:id="@+id/Sb_Time"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/rd"
+                    android:backgroundTint="#3000"/>
 
             </LinearLayout>
 
@@ -106,7 +103,10 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="0"
-                    app:srcCompat="@android:drawable/ic_popup_sync" />
+                    android:src="@drawable/sync"
+                    android:background="@drawable/fab"
+                    android:padding="8dp"
+                    android:backgroundTint="#77424242"/>
 
                 <FrameLayout
                     android:layout_width="match_parent"
@@ -128,7 +128,9 @@
                             android:id="@+id/Sb_Left"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_weight="1" />
+                            android:layout_weight="1"
+                            android:background="@drawable/rd"
+                            android:backgroundTint="#3000"/>
                     </LinearLayout>
 
                     <LinearLayout
@@ -148,7 +150,9 @@
                             android:id="@+id/Sb_Right"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_weight="1" />
+                            android:layout_weight="1"
+                            android:background="@drawable/rd"
+                            android:backgroundTint="#3000"/>
                     </LinearLayout>
                 </FrameLayout>
 
@@ -169,31 +173,40 @@
                             android:id="@+id/Sw_Loop"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="@string/Loop" />
+                            android:text="@string/Loop"
+                            android:background="@drawable/fab"
+                            android:padding="6dp"
+                            android:backgroundTint="#77424242"/>
 
                         <View
                             android:layout_width="match_parent"
                             android:layout_height="1dp"
                             android:layout_margin="4dp"
-                            android:background="?android:attr/listDivider" />
+                            android:background="@drawable/line" />
 
                         <Switch
                             android:id="@+id/Sw_Random"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="@string/Random" />
+                            android:text="@string/Random"
+                            android:background="@drawable/fab"
+                            android:padding="6dp"
+                            android:backgroundTint="#77424242"/>
 
                         <View
                             android:layout_width="match_parent"
                             android:layout_height="1dp"
                             android:layout_margin="4dp"
-                            android:background="?android:attr/listDivider" />
+                            android:background="@drawable/line" />
 
                         <Switch
                             android:id="@+id/Sw_Repeat"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="@string/Repeat" />
+                            android:text="@string/Repeat"
+                            android:background="@drawable/fab"
+                            android:padding="6dp"
+                            android:backgroundTint="#77424242"/>
 
                     </LinearLayout>
                 </ScrollView>
@@ -204,13 +217,13 @@
                 android:id="@+id/divider4"
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
-                android:background="?android:attr/listDivider" />
+                android:background="@drawable/line" />
 
         </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:orientation="horizontal">
 
             <ImageButton
@@ -218,27 +231,44 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                app:srcCompat="@android:drawable/ic_media_previous" />
+                android:src="@drawable/previous"
+                android:background="@drawable/fab"
+                android:padding="8dp"
+                android:backgroundTint="#77424242"/>
+
+            <Space
+                android:layout_width="16dp"
+                android:layout_height="wrap_content"/>
 
             <ImageButton
                 android:id="@+id/Btn_Contrl"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                app:srcCompat="@android:drawable/ic_media_play" />
+                android:src="@drawable/play"
+                android:background="@drawable/fab"
+                android:padding="8dp"
+                android:backgroundTint="#77424242"/>
+
+            <Space
+                android:layout_width="16dp"
+                android:layout_height="wrap_content"/>
 
             <ImageButton
                 android:id="@+id/Btn_Next"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                app:srcCompat="@android:drawable/ic_media_next" />
+                android:src="@drawable/next"
+                android:background="@drawable/fab"
+                android:padding="8dp"
+                android:backgroundTint="#77424242"/>
 
         </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="250dp"
+            android:layout_height="wrap_content"
             android:orientation="vertical">
 
             <LinearLayout
@@ -256,7 +286,9 @@
 
             <ScrollView
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
+                android:layout_height="250dp"
+                android:background="@drawable/rd"
+                android:backgroundTint="#3000">
 
                 <LinearLayout
                     android:id="@+id/Linear_List"
@@ -267,17 +299,21 @@
 
         </LinearLayout>
     </LinearLayout>
-
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
+    <Space
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_weight="1"/>
+    <ImageButton
         android:id="@+id/Fab_Setting"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_weight="0"
         android:layout_marginEnd="32dp"
         android:layout_marginBottom="32dp"
         android:clickable="true"
-        app:backgroundTint="#FEFBFF"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:srcCompat="@android:drawable/ic_menu_manage" />
+        android:background="@drawable/fab"
+        android:layout_gravity="bottom|end"
+        android:padding="24dp"
+        android:src="@drawable/menu"/>
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+</LinearLayout>

@@ -1,6 +1,7 @@
 package sdjini.solution;
 
 import android.Manifest;
+import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
@@ -14,8 +15,8 @@ import android.widget.Toast;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
+import androidx.activity.*;
 import androidx.core.content.ContextCompat;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
@@ -25,7 +26,7 @@ import sdjini.solution.log.Level;
 import sdjini.solution.log.Logger;
 import sdjini.solution.log.Tag;
 
-public class SettingActivity extends AppCompatActivity {
+public class SettingActivity extends ComponentActivity {
     private SpManager spManager;
     private final ActivityResultLauncher<Intent> folderPickerLauncher = registerForActivityResult(
         new ActivityResultContracts.StartActivityForResult(), result -> {

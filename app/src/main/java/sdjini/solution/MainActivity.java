@@ -1,11 +1,11 @@
 package sdjini.solution;
 
+import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.SeekBar;
@@ -13,10 +13,8 @@ import android.widget.Switch;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -41,7 +39,7 @@ import sdjini.solution.music.MusicPlay;
 import sdjini.solution.music.MusicTool;
 
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends Activity {
     private Logger logger;
     private int playerLength;
     private static final String[] Types = {

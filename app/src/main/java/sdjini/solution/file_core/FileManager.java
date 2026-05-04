@@ -40,6 +40,8 @@ public class FileManager {
         setUri(uriStr);
     }
 
+    /// TODO：准备转用DocumentFile
+    /// 不是不报，时候未到（我懒）
     public void setUri(String uri){
         if (uri != null) dirUri = Uri.parse(uri);
         else dirUri = null;

@@ -11,13 +11,13 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.BitmapFactory;
-import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
 
+import androidx.annotation.NonNull;
 import androidx.core.app.NotificationCompat;
 import androidx.core.content.ContextCompat;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
@@ -58,12 +58,14 @@ public class MusicPlay extends Service {
     private Logger logger;
     private Handler mainHandler;
     private PhoneStateDetector psd;
+    /// TODO：做掉LBM
+    /// Undo：已严肃做不掉
     private LocalBroadcastManager lb;
     private boolean needRestart = true;
     private Context context;
     private final BroadcastReceiver ControlReceiver = new BroadcastReceiver() {
         @Override
-        public void onReceive(Context context, Intent intent) {
+        public void onReceive(Context context, @NonNull Intent intent) {
             logger.printAndWrite(Level.INFO, new Tags.MusicTag.IntentTrans(), "MusicPlay","Action:"+intent.getAction());
             try{
                 switch (intent.getAction()) {
@@ -220,9 +222,9 @@ public class MusicPlay extends Service {
     }
     private void foreground(){
         foregroundNotification = new NotificationCompat.Builder(this, "ForegroundPlaying")
-                .setSmallIcon(R.drawable.ic_launcher)
+                .setSmallIcon(R.drawable.icon)
                 .setContentTitle(getString(R.string.app_name))
-                .setLargeIcon(BitmapFactory.decodeResource(getResources(), R.drawable.ic_launcher))
+                .setLargeIcon(BitmapFactory.decodeResource(getResources(), R.drawable.icon))
                 .setOngoing(true)
                 .setPriority(NotificationCompat.PRIORITY_LOW)
                 .setCategory(NotificationCompat.CATEGORY_TRANSPORT)
@@ -239,7 +241,7 @@ public class MusicPlay extends Service {
         logger.printAndWrite(Level.STEP,new Tags.MusicTag.MusicManage(),"Update Notification");
     }
 
-    private void setPlayer(MusicFile musicFile){
+    private void setPlayer(@NonNull MusicFile musicFile){
         logger.printAndWrite(Level.STEP, new Tags.MusicTag.MusicManage(), "setPlayer", "state:" + state.name());
         try {
             nowPlaying = musicFile;
