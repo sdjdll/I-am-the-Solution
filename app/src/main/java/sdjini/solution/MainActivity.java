@@ -44,7 +44,7 @@ public class MainActivity extends Activity {
     private int playerLength;
     private static final String[] Types = {
             ".mp3",                                                                 // MP3
-        //傻逼你打错了
+        //傻逼你打错了是aac
             ".acc", ".mp4", ".m4a", ".3gp",                                         // AAC LC/LTP
             ".flac",                                                                // FLAC
             ".midi", ".mid", ".xmf", ".mxmf", ".rtttl", ".rtx", ".ota", ".imy",     // MIDI
